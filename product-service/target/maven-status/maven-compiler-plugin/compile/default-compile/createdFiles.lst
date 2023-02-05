@@ -1,0 +1,10 @@
+com\pblgllgs\productservice\dto\ProductRequest$ProductRequestBuilder.class
+com\pblgllgs\productservice\model\Product.class
+com\pblgllgs\productservice\model\Product$ProductBuilder.class
+com\pblgllgs\productservice\ProductServiceApplication.class
+com\pblgllgs\productservice\dto\ProductResponse.class
+com\pblgllgs\productservice\dto\ProductRequest.class
+com\pblgllgs\productservice\repository\ProductRepository.class
+com\pblgllgs\productservice\service\ProductService.class
+com\pblgllgs\productservice\controller\ProductController.class
+com\pblgllgs\productservice\dto\ProductResponse$ProductResponseBuilder.class
