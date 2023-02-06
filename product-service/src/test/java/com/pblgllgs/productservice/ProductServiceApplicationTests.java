@@ -1,6 +1,5 @@
 package com.pblgllgs.productservice;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pblgllgs.productservice.dto.ProductRequest;
 import com.pblgllgs.productservice.repository.ProductRepository;
