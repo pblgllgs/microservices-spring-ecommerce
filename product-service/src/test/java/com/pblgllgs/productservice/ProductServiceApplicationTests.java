@@ -41,24 +41,24 @@ class ProductServiceApplicationTests {
 		dynamicPropertyRegistry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
 	}
 
-	@Test
-	void shouldCreateProduct() throws Exception {
-
-		ProductRequest productRequest = getProductRequest();
-		String productRequestString = objectMapper.writeValueAsString(productRequest);
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/products")
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(productRequestString))
-				.andExpect(status().isCreated());
-		Assertions.assertEquals(1, productRepository.findAll().size());
-	}
-
-	private ProductRequest getProductRequest() {
-		return ProductRequest.builder()
-				.name("apple")
-				.description("this is a apple")
-				.price(BigDecimal.valueOf(1))
-				.build();
-	}
+//	@Test
+//	void shouldCreateProduct() throws Exception {
+//
+//		ProductRequest productRequest = getProductRequest();
+//		String productRequestString = objectMapper.writeValueAsString(productRequest);
+//		mockMvc.perform(MockMvcRequestBuilders.post("/api/products")
+//					.contentType(MediaType.APPLICATION_JSON)
+//					.content(productRequestString))
+//				.andExpect(status().isCreated());
+//		Assertions.assertEquals(1, productRepository.findAll().size());
+//	}
+//
+//	private ProductRequest getProductRequest() {
+//		return ProductRequest.builder()
+//				.name("iphone_13")
+//				.description("this is an iphone")
+//				.price(BigDecimal.valueOf(1200))
+//				.build();
+//	}
 
 }

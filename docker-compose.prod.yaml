@@ -1,0 +1,199 @@
+version: '3'
+
+services:
+  postgres-order:
+    container_name: postgres-order
+    image: postgres:15.1
+    environment:
+      POSTGRES_DB: order-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      PG_DATA: /data/postgres
+    volumes:
+      - postgres_data_order:/data/postgres
+    expose:
+      - "5431"
+    ports:
+      - "5431:5431"
+    command:
+       -p 5431
+    restart: unless-stopped
+
+  postgres-inventory:
+    container_name: postgres-inventory
+    image: postgres:15.1
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: inventory-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_inventory:/data/postgres
+
+  mongo-product:
+    container_name: mongo-product
+    image: mongo:6.0
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: product-service
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - mongo_data_product:/data/db
+
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:8.0.32
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: keycloak
+      MYSQL_PASSWORD: example
+      MYSQL_DATABASE: keycloak
+    volumes:
+      - mysql_keycloak_data:/var/lib/mysql
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:18.0.0
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: example
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: ["start-dev","--import-realm"]
+    volumes:
+      - keycloak_reamls_data:/opt/keycloak/data/
+    depends_on:
+      - keycloak-mysql
+
+  zipkin:
+    container_name: zipkin
+    image:  openzipkin/zipkin
+    ports:
+      - "9411:9411"
+
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:7.3.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    container_name: broker
+    image: confluentinc/cp-kafka:7.3.0
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+  discovery-server:
+    container_name: discovery-server
+    image: pblgllgs/discovery-server:${TAG}
+    pull_policy: always
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - zipkin
+
+  api-gateway:
+    container_name: api-gateway
+    image: pblgllgs/api-gateway:${TAG}
+    pull_policy: always
+    ports:
+      - "8181:8080"
+    expose:
+      - "8181"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: TRACE
+    depends_on:
+      - zipkin
+      - discovery-server
+      - keycloak
+
+  product-service:
+    container_name: product-service
+    image: pblgllgs/product-service:${TAG}
+    pull_policy: always
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: product-service
+    depends_on:
+      - mongo-product
+      - discovery-server
+      - api-gateway
+
+  order-service:
+    container_name: order-service
+    image: pblgllgs/order-service:${TAG}
+    pull_policy: always
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5431/order-service
+    depends_on:
+      - postgres-inventory
+      - broker
+      - zipkin
+      - discovery-server
+      - api-gateway
+
+  inventory-service:
+    container_name: inventory-service
+    image: pblgllgs/inventory-service:${TAG}
+    pull_policy: always
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/inventory-service
+    depends_on:
+      - postgres-inventory
+      - discovery-server
+      - api-gateway
+
+  notification-service:
+    container_name: notification-service
+    image: pblgllgs/notification-service:${TAG}
+    pull_policy: always
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - zipkin
+      - broker
+      - discovery-server
+      - api-gateway
+
+volumes:
+  mongo_data_product:
+    external: false
+  postgres_data_order:
+    external: false
+  postgres_data_inventory:
+    external: false
+  mysql_keycloak_data:
+    external: false
+  keycloak_reamls_data:
+    external: false
