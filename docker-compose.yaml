@@ -43,10 +43,29 @@ services:
     volumes:
       - inventory_mysql_db:/var/lib/mysql
 
+  keyClock:
+    container_name: keyClock
+    image: quay.io/keycloak/keycloak:18.0.0
+    ports:
+      - "8181:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    restart: unless-stopped
+    depends_on:
+      - product-service
+      - order-service
+      - inventory-service
+    command: start-dev
+    volumes:
+      - keyCloak_data:/opt/keycloak/data/
+
 volumes:
   product_mongo_db:
     external: false
   order_mysql_db:
     external: false
   inventory_mysql_db:
+    external: false
+  keyCloak_data:
     external: false
