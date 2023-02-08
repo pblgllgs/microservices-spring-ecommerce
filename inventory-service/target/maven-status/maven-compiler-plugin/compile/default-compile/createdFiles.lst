@@ -1,7 +1,0 @@
-com\pblgllgs\inventoryservice\controller\InventoryController.class
-com\pblgllgs\inventoryservice\InventoryServiceApplication.class
-com\pblgllgs\inventoryservice\model\Inventory.class
-com\pblgllgs\inventoryservice\service\InventoryService.class
-com\pblgllgs\inventoryservice\dto\InventoryResponse$InventoryResponseBuilder.class
-com\pblgllgs\inventoryservice\dto\InventoryResponse.class
-com\pblgllgs\inventoryservice\repository\InventoryRepository.class
