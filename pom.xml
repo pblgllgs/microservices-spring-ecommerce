@@ -68,7 +68,7 @@
                     <from>
                         <image>openjdk:17-alpine3.14</image>
                     </from>
-                    <to><image>registry.hub.docker.com/pblgllgs/${project.artifactId}:0.0.5</image></to>
+                    <to><image>registry.hub.docker.com/pblgllgs/${project.artifactId}:0.0.6-prometheus</image></to>
                 </configuration>
             </plugin>
         </plugins>

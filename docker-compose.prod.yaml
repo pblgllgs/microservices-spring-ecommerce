@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: example
       PG_DATA: /data/postgres
     volumes:
-      - postgres_data_order:/data/postgres
+      - postgres_data_order:/var/lib/postgresql/data
     expose:
       - "5431"
     ports:
@@ -30,7 +30,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data_inventory:/data/postgres
+      - postgres_data_inventory:/var/lib/postgresql/data
 
   mongo-product:
     container_name: mongo-product
@@ -186,6 +186,34 @@ services:
       - discovery-server
       - api-gateway
 
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.42.0
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - product-service
+      - inventory-service
+      - order-service
+      - notification-service
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana-oss:8.5.2
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    links:
+      - prometheus:prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: password
+
 volumes:
   mongo_data_product:
     external: false
@@ -196,4 +224,6 @@ volumes:
   mysql_keycloak_data:
     external: false
   keycloak_reamls_data:
+    external: false
+  grafana_data:
     external: false

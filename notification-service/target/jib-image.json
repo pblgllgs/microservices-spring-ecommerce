@@ -1,1 +1,1 @@
-{"image":"registry.hub.docker.com/pblgllgs/notification-service:0.0.5","imageId":"sha256:1ac7ceba6b7107bfca88dc6cb52588923fccdd8e24bfec108344d0207daa149f","imageDigest":"sha256:ce0011d8ca9480322b0bcbd6fe1b9e75fe1b2e5abe8b1e888490222db000bd78","tags":["0.0.5"]}
+{"image":"registry.hub.docker.com/pblgllgs/notification-service:0.0.6-prometheus","imageId":"sha256:a78b24ef8363e530380476ea4e139cec56b25e6b5ebb7a19a2a5d326848c088f","imageDigest":"sha256:b3d9bddf743f25ed050d68c49e09e5fbd3ad5ee9050143792b2a6e70a3f02631","tags":["0.0.6-prometheus"]}
