@@ -41,3 +41,28 @@ name = product-service
 ```$bash
 docker login registry-1.docker.io
 ```
+
+## Keycloak config
+
+### Config
+
+```$bash
+Add realm -> "spring-boot-microservices-realm"
+
+Clients -> Create -> Client ID -> "spring-cloud-client"
+```
+
+## Postman config
+
+### Config
+
+```$bash
+Authorization->Type->OAuth2->Configure New Token:
+-Grant Type: crendetials
+-Access Token URL: http://keycloak:8080/realms/spring-boot-microservices-realm/protocol/openid-connect/token
+-Client ID: spring-cloud-client
+-Client Secret: CLIENT_SECRET_BY_KEYCLOK
+-Scope: openid offline_access
+-Client Authentication: Send as Basic Auth header
+->Get New Access Token->Prosed->Use Token->Send
+```
