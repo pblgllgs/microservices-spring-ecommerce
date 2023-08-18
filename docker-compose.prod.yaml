@@ -80,7 +80,7 @@ services:
 
   zipkin:
     container_name: zipkin
-    image:  openzipkin/zipkin
+    image:  openzipkin/zipkin:2.24
     ports:
       - "9411:9411"
 
